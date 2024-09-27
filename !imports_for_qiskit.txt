@@ -1,0 +1,33 @@
+%pip install qiskit
+%pip install qiskit-aer
+
+#You may need to restart the runtime for this change to take effect
+%pip install pylatexenc
+%pip install qiskit_ibm_runtime
+
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
+from qiskit_aer import Aer
+from qiskit.primitives import Sampler, StatevectorSampler, Estimator, StatevectorEstimator
+import numpy as np
+
+sampler = StatevectorSampler()
+from qiskit_ibm_runtime import SamplerV2 as Sampler
+from qiskit.visualization import plot_histogram, plot_state_qsphere, plot_bloch_multivector, plot_bloch_vector
+from qiskit.quantum_info import Statevector
+
+
+
+q = QuantumRegister(2)
+c = ClassicalRegister(2, "c_reg")
+qc = QuantumCircuit(q, c)
+
+backend = Aer.get_backend('qasm_simulator') #tell it where to simulate
+
+job = transpile(qc, backend)
+results = sampler.run([qc]).result()
+data_pub = results[0].data
+counts = data_pub.c.get_counts()
+
+#counts=execute(qc, backend, shots=1024).result().get_counts(qc)
+
+plot_histogram(counts)
